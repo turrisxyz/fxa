@@ -38,7 +38,7 @@
   @extend .mb-6;
 }
 
-.fxa-logo {
+.fxa-logo-firefox {
   padding: global.$s-5 global.$s-0 !important;
   height: 56px !important;
   width: 171px !important;
@@ -91,4 +91,11 @@
 
 .text-footer-automatedEmail {
   @extend .text-footer;
+}
+
+.text-footer-appBadges div {
+  @extend .text-sm;
+  @extend .font-sans;
+  color: global.$grey-400 !important;
+  text-align: center !important;
 }
