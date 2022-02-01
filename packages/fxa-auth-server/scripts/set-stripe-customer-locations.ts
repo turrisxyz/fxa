@@ -39,12 +39,12 @@ async function init() {
     .option(
       '-d, --delay [milliseconds]',
       'Amount of time to wait between processing customers.  Defaults to 100ms.',
-      100
+      '100'
     )
     .option(
       '-m, --max-customers [number]',
       'The maximum number of customers to process. 0 = all customers.  Defaults to all.',
-      0
+      '0'
     )
     .option(
       '-n, --dry-run [true|false]',

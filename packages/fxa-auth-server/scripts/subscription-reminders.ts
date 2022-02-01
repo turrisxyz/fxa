@@ -12,8 +12,8 @@ import { SubscriptionReminders } from '../lib/payments/subscription-reminders';
 const pckg = require('../package.json');
 const config = require('../config').getProperties();
 
-const DEFAULT_PLAN_LENGTH = 180;
-const DEFAULT_REMINDER_LENGTH = 14;
+const DEFAULT_PLAN_LENGTH = '180';
+const DEFAULT_REMINDER_LENGTH = '14';
 
 async function init() {
   program
