@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const Hapi = require('@hapi/hapi');
-const Sentry = require('@sentry/node');
 const cloneDeep = require('lodash').cloneDeep;
 const ScopeSet = require('fxa-shared').oauth.scopes;
 
@@ -13,7 +12,7 @@ const logger = require('../logging')('server.web');
 const request = require('../request');
 const summary = require('../logging/summary');
 
-const { tagCriticalEvent } = require('fxa-shared/tags/sentry');
+const { FxaSentryForNode } = require('fxa-shared/sentry');
 
 function trimLocale(header) {
   if (!header) {
@@ -87,28 +86,18 @@ exports.create = async function createServer() {
   // configure Sentry
   const sentryDsn = config.sentryDsn;
   if (sentryDsn) {
-    Sentry.init({
+    FxaSentryForNode.init({
       dsn: sentryDsn,
-      beforeSend: tagCriticalEvent,
+      release: config.get('release'),
+      environment: config.get('env'),
+      name: 'fxa-profile-server',
     });
+
     server.events.on(
       { name: 'request', channels: 'error' },
       (request, event) => {
         const err = (event && event.error) || null;
-        let exception = '';
-        if (err && err.stack) {
-          try {
-            exception = err.stack.split('\n')[0];
-          } catch (e) {
-            // ignore bad stack frames
-          }
-        }
-
-        Sentry.captureException(err, {
-          extra: {
-            exception: exception,
-          },
-        });
+        FxaSentryForNode.captureError(err);
       }
     );
   }

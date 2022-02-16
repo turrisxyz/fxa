@@ -4,7 +4,8 @@
 
 import Logger from './logger';
 import * as Sentry from '@sentry/browser';
-import { tagCriticalEvent } from 'fxa-shared/tags/sentry';
+import { filterAndTag } from 'fxa-shared/tags/sentry';
+import { config } from 'process';
 
 var ALLOWED_QUERY_PARAMETERS = [
   'automatedBrowser',
@@ -130,7 +131,14 @@ SentryMetrics.prototype = {
       Sentry.init({
         release,
         dsn,
-        beforeSend: tagCriticalEvent,
+        environment: config.get('env'),
+        beforeSend: (event, hint) => {
+          return filterAndTag(event, hint, {
+            tags: {
+              name: config.get('fxa-payments'),
+            },
+          });
+        },
       });
     } catch (e) {
       this._logger.error(e);

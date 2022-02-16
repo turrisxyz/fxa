@@ -62,6 +62,7 @@ const fourOhFour = require('../lib/404');
 const serverErrorHandler = require('../lib/500');
 const localizedRender = require('../lib/localized-render');
 const csp = require('../lib/csp');
+const { FxaSentryForNode } = require('fxa-shared/sentry');
 const cspRulesBlocking = require('../lib/csp/blocking')(config);
 const cspRulesReportOnly = require('../lib/csp/report-only')(config);
 
@@ -102,7 +103,7 @@ function makeApp() {
   app.set('views', PAGE_TEMPLATE_DIRECTORY);
 
   // The request handler must be the first item
-  app.use(sentry.sentryModule.Handlers.requestHandler());
+  app.use(FxaSentryForNode.Handlers.requestHandler());
 
   // i18n adds metadata to a request to help
   // with translating templates on the server.
@@ -223,6 +224,7 @@ function makeApp() {
         req.query,
         req.originalUrl
       );
+
     sentry.sentryModule.captureException(err);
     routeHelpers.validationErrorHandler(err, req, res, next);
   });
