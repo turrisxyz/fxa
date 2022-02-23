@@ -22,7 +22,8 @@ module.exports = () => {
   const express = require('express');
   const helmet = require('helmet');
   const noCache = require('nocache');
-  const sentry = require('@sentry/node');
+  const Sentry = require('@sentry/node');
+  require('@sentry/tracing');
   const serveStatic = require('serve-static');
 
   const bodyParser = require('body-parser');
@@ -32,7 +33,11 @@ module.exports = () => {
   const { cors, routing } = require('fxa-shared/express')();
   const { v4: uuid } = require('uuid');
 
-  const { tagCriticalEvent } = require('fxa-shared/tags/sentry');
+  const {
+    tagCriticalEvent,
+    buildSentryConfig,
+    tagFxaName,
+  } = require('fxa-shared/sentry');
 
   const NOOP = () => {};
   const StatsD = require('hot-shots');
@@ -70,7 +75,10 @@ module.exports = () => {
     productRedirectURLs: config.get('productRedirectURLs'),
     sentry: {
       dsn: config.get('sentry.dsn'),
-      url: config.get('sentry.url'),
+      sampleRate: config.get('sentry.sampleRate'),
+      tracesSampleRate: config.get('sentry.tracesSampleRate'),
+      serverName: config.get('sentry.serverName'),
+      clientName: config.get('sentry.clientName'),
     },
     servers: {
       auth: {
@@ -111,13 +119,20 @@ module.exports = () => {
 
   app.disable('x-powered-by');
 
-  const sentryDSN = config.get('sentry.dsn');
-  if (sentryDSN) {
-    sentry.init({
-      dsn: sentryDSN,
-      beforeSend: tagCriticalEvent,
-    });
-    app.use(sentry.Handlers.requestHandler());
+  if (config.get('sentry.dsn')) {
+    const opts = buildSentryConfig(config.get(), logger);
+    if (opts && opts.dsn) {
+      Sentry.init({
+        ...opts,
+        beforeSend(event) {
+          event = tagCriticalEvent(event);
+          event = tagFxaName(event, opts.serverName);
+          return event;
+        },
+        integrations: [new Sentry.Integrations.Http({ tracing: true })],
+      });
+      app.use(Sentry.Handlers.requestHandler());
+    }
   }
 
   const hstsEnabled = config.get('hstsEnabled');
@@ -294,8 +309,8 @@ module.exports = () => {
 
   app.use(routeHelpers.validationErrorHandler);
 
-  if (sentryDSN) {
-    app.use(sentry.Handlers.errorHandler());
+  if (config.get('sentry.dsn')) {
+    app.use(Sentry.Handlers.errorHandler());
   }
 
   return {

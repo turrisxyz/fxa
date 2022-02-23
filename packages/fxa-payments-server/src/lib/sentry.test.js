@@ -7,6 +7,9 @@ import sentryMetrics from './sentry';
 
 var assert = chai.assert;
 const dsn = 'https://public:private@host:port/1';
+const release = 'v0.0.0';
+const env = 'test';
+const serverName = 'fxa-payment-server';
 
 describe('lib/sentry', function () {
   beforeAll(() => {
@@ -21,7 +24,16 @@ describe('lib/sentry', function () {
   describe('init', function () {
     it('properly configures with dsn', function () {
       try {
-        sentryMetrics.configure(dsn);
+        sentryMetrics.configure({
+          release,
+          env,
+          sentry: {
+            dsn,
+            serverName,
+            sampleRate: 1,
+            tracesSampleRate: 0.1,
+          },
+        });
       } catch (e) {
         assert.isNull(e);
       }
@@ -29,7 +41,16 @@ describe('lib/sentry', function () {
   });
 
   describe('beforeSend', function () {
-    sentryMetrics.configure(dsn);
+    sentryMetrics.configure({
+      release,
+      env,
+      sentry: {
+        dsn,
+        serverName,
+        sampleRate: 1,
+        tracesSampleRate: 1,
+      },
+    });
 
     it('works without request url', function () {
       var data = {

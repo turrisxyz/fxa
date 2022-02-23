@@ -71,11 +71,31 @@ const conf = convict({
     env: 'PORT',
     format: Number,
   },
-  sentryDsn: {
-    default: '',
-    doc: 'Sentry DSN for error and log reporting',
-    env: 'SENTRY_DSN',
-    format: 'String',
+  sentry: {
+    dsn: {
+      doc: 'Sentry DSN for error and log reporting',
+      default: '',
+      format: 'String',
+      env: 'SENTRY_DSN',
+    },
+    sampleRate: {
+      doc: 'Rate at which sentry traces are captured.',
+      default: 1.0,
+      format: 'Number',
+      env: 'SENTRY_SAMPLE_RATE',
+    },
+    tracesSampleRate: {
+      doc: 'Rate at which sentry traces are captured.',
+      default: 1.0,
+      format: 'Number',
+      env: 'SENTRY_TRACES_SAMPLE_RATE',
+    },
+    serverName: {
+      doc: 'Name used by sentry to identify the server.',
+      default: 'fxa-admin-server',
+      format: 'String',
+      env: 'SENTRY_SERVER_NAME',
+    },
   },
   hstsEnabled: {
     default: true,

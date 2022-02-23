@@ -677,5 +677,8 @@ function getConfig() {
       secretBearerToken: 'topsecrets',
       ticketPayloadLimit: 131072,
     },
+    sentry: {
+      dsn: '',
+    },
   };
 }

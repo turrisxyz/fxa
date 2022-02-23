@@ -4,13 +4,20 @@
 
 'use strict';
 
+const config = require('../config').getProperties();
 const Hoek = require('@hapi/hoek');
 const Sentry = require('@sentry/node');
+require('@sentry/tracing');
 const { ExtraErrorData } = require('@sentry/integrations');
 const verror = require('verror');
 const { ERRNO } = require('./error');
-const { tagCriticalEvent } = require('fxa-shared/tags/sentry');
+const {
+  tagCriticalEvent,
+  buildSentryConfig,
+  tagFxaName,
+} = require('fxa-shared/sentry');
 const getVersion = require('./version').getVersion;
+const logger = require('./log')(config.log.level, 'sentry');
 
 // Matches uid, session, oauth and other common tokens which we would
 // prefer not to include in Sentry reports.
@@ -161,19 +168,29 @@ function reportSentryError(err, request) {
 }
 
 async function configureSentry(server, config, processName = 'key_server') {
-  const sentryDsn = config.sentryDsn;
-  const versionData = await getVersion();
-  if (sentryDsn) {
-    Sentry.init({
-      dsn: sentryDsn,
-      release: versionData.version,
-      beforeSend(event, hint) {
-        return filterSentryEvent(event, hint);
+  if (config.sentry.dsn) {
+    const opts = buildSentryConfig(
+      {
+        ...config,
+        release: (await getVersion())?.version,
       },
+      logger
+    );
+
+    Sentry.init({
+      ...opts,
+      beforeSend(event, hint) {
+        event = tagFxaName(event, opts.serverName);
+        event = filterSentryEvent(event, hint);
+        return event;
+      },
+
+      //Extra config options
       normalizeDepth: 6,
       integrations: [
         new Sentry.Integrations.LinkedErrors({ key: 'jse_cause' }),
         new ExtraErrorData({ depth: 5 }),
+        new Sentry.Integrations.Http({ tracing: true }),
       ],
       // https://docs.sentry.io/platforms/node/configuration/options/#max-value-length
       maxValueLength: 500,

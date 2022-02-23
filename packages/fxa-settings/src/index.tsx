@@ -14,7 +14,15 @@ import './index.scss';
 
 try {
   const appContext = initializeAppContext();
-  sentryMetrics.configure(config.sentry.dsn, config.version);
+
+  sentryMetrics.configure({
+    env: config.env,
+    release: config.version,
+    sentry: {
+      ...config.sentry,
+    },
+  });
+
   const flowQueryParams = searchParams(
     window.location.search
   ) as FlowQueryParams;

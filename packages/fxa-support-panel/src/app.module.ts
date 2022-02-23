@@ -35,11 +35,16 @@ const version = getVersionInfo(__dirname);
     SentryModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<AppConfig>) => ({
-        dsn: configService.get('sentryDsn'),
-        environment: configService.get('env'),
-        release: version.version,
-      }),
+      useFactory: (configService: ConfigService<AppConfig>) => {
+        return {
+          dsn: configService.get('sentry').dsn,
+          environment: configService.get('env'),
+          serverName: configService.get('sentry').serverName,
+          release: version.version,
+          sampleRate: configService.get('sentry').sampleRate,
+          tracesSampleRate: configService.get('sentry').tracesSampleRate,
+        };
+      },
     }),
   ],
   controllers: [AppController],

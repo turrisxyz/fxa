@@ -4,6 +4,7 @@
 
 const Hapi = require('@hapi/hapi');
 const Sentry = require('@sentry/node');
+require('@sentry/tracing');
 const cloneDeep = require('lodash').cloneDeep;
 const ScopeSet = require('fxa-shared').oauth.scopes;
 
@@ -13,7 +14,11 @@ const logger = require('../logging')('server.web');
 const request = require('../request');
 const summary = require('../logging/summary');
 
-const { tagCriticalEvent } = require('fxa-shared/tags/sentry');
+const {
+  tagCriticalEvent,
+  buildSentryConfig,
+  tagFxaName,
+} = require('fxa-shared/sentry');
 
 function trimLocale(header) {
   if (!header) {
@@ -57,7 +62,13 @@ exports.create = async function createServer() {
     host: config.server.host,
     port: config.server.port,
     routes: {
-      cors: true,
+      cors: {
+        additionalExposedHeaders: ['Timestamp', 'Accept-Language'],
+        additionalHeaders: ['sentry-trace'],
+        // If we're accepting CORS from any origin then use Hapi's "ignore" mode,
+        // which is more forgiving of missing Origin header.
+        origin: ['*'],
+      },
       security: {
         hsts: {
           maxAge: 31536000,
@@ -85,11 +96,24 @@ exports.create = async function createServer() {
   server.validator(require('@hapi/joi'));
 
   // configure Sentry
-  const sentryDsn = config.sentryDsn;
-  if (sentryDsn) {
+  if (config.sentry && config.sentry.dsn) {
+    const release = require('../../package.json').version;
+    const opts = buildSentryConfig(
+      {
+        ...config,
+        release,
+      },
+      // TOOD: Get logger working
+      console
+    );
     Sentry.init({
-      dsn: sentryDsn,
-      beforeSend: tagCriticalEvent,
+      ...opts,
+      beforeSend(event) {
+        event = tagCriticalEvent(event);
+        event = tagFxaName(event, opts.serverName);
+        return event;
+      },
+      integrations: [new Sentry.Integrations.Http({ tracing: true })],
     });
     server.events.on(
       { name: 'request', channels: 'error' },

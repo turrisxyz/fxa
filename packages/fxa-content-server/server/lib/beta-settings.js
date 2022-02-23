@@ -26,6 +26,7 @@ if (env !== 'development') {
 
 const settingsConfig = {
   env,
+  version: config.get('version'),
   marketingEmailPreferencesUrl: config.get('marketing_email.preferences_url'),
   metrics: {
     navTiming: {
@@ -34,7 +35,11 @@ const settingsConfig = {
     },
   },
   sentry: {
-    dsn: config.get('sentry.client_errors_dsn'),
+    dsn: config.get('sentry.dsn'),
+    sampleRate: config.get('sentry.sampleRate'),
+    tracesSampleRate: config.get('sentry.tracesSampleRate'),
+    clientName: config.get('sentry.clientName'),
+    serverName: config.get('sentry.serverName'),
   },
   servers: {
     gql: {
@@ -117,6 +122,7 @@ const useSettingsProxy = createProxyMiddleware({
 
 // Modify the static settings page by replacing __SERVER_CONFIG__ with the config object
 const modifySettingsStatic = function (req, res) {
+  console.log('modifying settings config', settingsConfig);
   return res.send(
     swapBetaMeta(settingsIndexFile, {
       __SERVER_CONFIG__: settingsConfig,

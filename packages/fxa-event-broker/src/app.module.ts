@@ -9,6 +9,7 @@ import { LoggerModule } from 'fxa-shared/nestjs/logger/logger.module';
 import { MetricsFactory } from 'fxa-shared/nestjs/metrics.service';
 import { SentryModule } from 'fxa-shared/nestjs/sentry/sentry.module';
 import { getVersionInfo } from 'fxa-shared/nestjs/version';
+import { config } from 'process';
 
 import { AuthModule } from './auth/auth.module';
 import { ClientCapabilityModule } from './client-capability/client-capability.module';
@@ -38,11 +39,21 @@ const version = getVersionInfo(__dirname);
     SentryModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<AppConfig>) => ({
-        dsn: configService.get('sentryDsn'),
-        environment: configService.get('env'),
-        release: version.version,
-      }),
+      useFactory: (configService: ConfigService<AppConfig>) => {
+        const sentry = configService.get('sentry');
+        if (!sentry) {
+          return {};
+        }
+
+        return {
+          dsn: sentry.dsn,
+          environment: configService.get('env'),
+          serverName: sentry.serverName,
+          release: version.version,
+          sampleRate: sentry.sampleRate,
+          tracesSampleRate: sentry.tracesSampleRate,
+        };
+      },
     }),
     QueueworkerModule,
     PubsubProxyModule,

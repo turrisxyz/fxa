@@ -98,6 +98,14 @@ const mockConfig = {
     privacyNotice: 'https://abc.xyz/privacy',
     termsOfService: 'https://abc.xyz/terms',
   },
+  sentry: {
+    clientName: 'fxa-payments-client',
+    dsn: 'https://foo.sentry.io/bar',
+    sampleRate: 1,
+    serverName: 'fxa-payments-server',
+    tracesSampleRate: 1,
+  },
+  version: '1.0.0',
 };
 
 const encodedConfig = encodeURIComponent(JSON.stringify(mockConfig));
@@ -124,8 +132,11 @@ const expectedMergedConfig = {
     },
   },
   sentry: {
-    dsn: '',
-    url: 'https://sentry.prod.mozaws.net',
+    clientName: 'fxa-payments-client',
+    dsn: 'https://foo.sentry.io/bar',
+    sampleRate: 1,
+    serverName: 'fxa-payments-server',
+    tracesSampleRate: 1,
   },
   servers: {
     auth: {
@@ -153,6 +164,7 @@ const expectedMergedConfig = {
   stripe: {
     apiKey: '',
   },
+  version: '1.0.0',
 };
 
 const headSelector = (name: string | null) => `meta[name="${name}"]`;

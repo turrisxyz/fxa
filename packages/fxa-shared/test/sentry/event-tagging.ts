@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import { Event } from '@sentry/types';
-import { tagCriticalEvent } from '../../tags/sentry';
+import { tagCriticalEvent } from '../../sentry';
 
 describe('critical-endpoints', () => {
   it('adds critical tag to applicable event', () => {

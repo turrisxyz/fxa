@@ -9,6 +9,7 @@ import { LoggerModule } from 'fxa-shared/nestjs/logger/logger.module';
 import { MozLoggerService } from 'fxa-shared/nestjs/logger/logger.service';
 import { SentryModule } from 'fxa-shared/nestjs/sentry/sentry.module';
 import { getVersionInfo } from 'fxa-shared/nestjs/version';
+import { config } from 'process';
 
 import { AuthModule } from './auth/auth.module';
 import { BackendModule } from './backend/backend.module';
@@ -47,9 +48,12 @@ const version = getVersionInfo(__dirname);
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService<AppConfig>) => ({
-        dsn: configService.get('sentryDsn'),
+        dsn: configService.get('sentry').dsn,
         environment: configService.get('env'),
+        serverName: configService.get('sentry').serverName,
         release: version.version,
+        tracesSampleRate: configService.get('sentry').tracesSampleRate,
+        sampleRate: configService.get('sentry').sampleRate,
       }),
     }),
   ],

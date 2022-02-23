@@ -9,6 +9,18 @@ const mockAmplitudeConfig = {
   schemaValidation: true,
   rawEvents: false,
 };
+jest.mock('../config', () => {
+  const config = jest.requireActual('../config');
+  config.get = (key) => {
+    if (key === 'amplitude') {
+      return mockAmplitudeConfig;
+    } else {
+      return config.get(key);
+    }
+  };
+  return config;
+});
+
 jest.mock('fxa-shared/metrics/amplitude.js', () => ({
   ...jest.requireActual('fxa-shared/metrics/amplitude.js'),
   validate: mockSchemaValidatorFn,
@@ -32,16 +44,6 @@ const amplitude = require('./amplitude');
 const log = require('./logging/log')();
 jest.spyOn(log, 'info').mockImplementation(() => {});
 jest.spyOn(log, 'error').mockImplementation(() => {});
-
-jest.mock('../config', () => ({
-  ...jest.requireActual('../config'),
-  get: (key) => {
-    switch (key) {
-      case 'amplitude':
-        return mockAmplitudeConfig;
-    }
-  },
-}));
 
 const mocks = {
   event: {

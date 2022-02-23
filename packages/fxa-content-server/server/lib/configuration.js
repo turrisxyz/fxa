@@ -145,6 +145,9 @@ const conf = (module.exports = convict({
     env: 'NODE_ENV',
     format: ['production', 'development'],
   },
+  version: {
+    default: versionInfo.version,
+  },
   featureFlags: {
     enabled: {
       default: true,
@@ -566,17 +569,29 @@ const conf = (module.exports = convict({
     },
   },
   sentry: {
-    client_errors_dsn: {
-      default: undefined,
+    dsn: {
+      default: '',
       doc: 'Sentry config for client side errors. If not set, then no errors reported.',
-      env: 'SENTRY_CLIENT_ERRORS_DSN',
+      env: 'SENTRY_DSN',
       format: String,
     },
-    server_errors_dsn: {
-      default: undefined,
-      doc: 'Sentry config for Express server-side errors. If not set, then no errors reported.',
-      env: 'SENTRY_SERVER_ERRORS_DSN',
-      format: String,
+    clientName: {
+      default: 'fxa-content-client',
+    },
+    serverName: {
+      default: 'fxa-content-server',
+    },
+    sampleRate: {
+      default: 1,
+      doc: 'Sentry config for client side errors. If not set, then no errors reported.',
+      env: 'SENTRY_SAMPLE_RATE',
+      format: Number,
+    },
+    tracesSampleRate: {
+      default: 0.1,
+      doc: 'Sentry config for client side errors. If not set, then no errors reported.',
+      env: 'SENTRY_TRACES_SAMPLE_RATE',
+      format: Number,
     },
   },
   sms: {
