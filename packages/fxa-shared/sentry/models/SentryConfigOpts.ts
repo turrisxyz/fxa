@@ -1,9 +1,4 @@
 export type SentryConfigOpts = {
-  /** Name of environment */
-  env?: string;
-  /** Fallback environment name */
-  environment?: string;
-
   /** Name of release */
   release?: string;
 

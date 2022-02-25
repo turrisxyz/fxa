@@ -1,9 +1,7 @@
 import { assert } from 'chai';
-import { Event } from '@sentry/types';
 import { buildSentryConfig, SentryConfigOpts } from '../../sentry';
 import Sinon, { SinonSpiedInstance } from 'sinon';
 import { ILogger } from '../../log';
-import { del } from 'superagent';
 
 describe('config-builder', () => {
   const emptyLogger: ILogger = {
@@ -18,10 +16,11 @@ describe('config-builder', () => {
   beforeEach(() => {
     loggerSpy = Sinon.spy(emptyLogger);
   });
+  afterEach(() => {
+    loggerSpy;
+  });
 
   const testConfig: SentryConfigOpts = {
-    env: 'test1',
-    environment: 'test2',
     release: '1.0.1',
     version: '1.0.2',
     sentry: {
@@ -41,7 +40,7 @@ describe('config-builder', () => {
 
   it('picks correct defaults', () => {
     const config = buildSentryConfig(testConfig, console);
-    assert.equal(config.environment, testConfig.env);
+    assert.equal(config.environment, testConfig.sentry.env);
     assert.equal(config.release, testConfig.release);
     assert.equal(config.fxaName, testConfig.sentry.clientName);
   });
@@ -49,12 +48,10 @@ describe('config-builder', () => {
   it('falls back', () => {
     const clone = Object.assign({}, testConfig);
     delete clone.sentry.clientName;
-    delete clone.env;
     delete clone.release;
 
     const config = buildSentryConfig(clone, console);
 
-    assert.equal(config.environment, testConfig.environment);
     assert.equal(config.release, testConfig.version);
     assert.equal(config.fxaName, testConfig.sentry.serverName);
   });
@@ -76,11 +73,10 @@ describe('config-builder', () => {
     }, 'config missing sentry.dsn.');
   });
 
-  it('errors on missing environment', () => {
+  it('errors on bad environment', () => {
     const clone = Object.assign({}, testConfig);
     clone.sentry.strict = true;
-    delete clone.env;
-    delete clone.environment;
+    clone.sentry.env = 'xyz';
 
     assert.throws(() => {
       buildSentryConfig(clone, console);

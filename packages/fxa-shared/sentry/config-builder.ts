@@ -1,7 +1,23 @@
 import { ILogger } from '../log';
 import { SentryConfigOpts } from './models/SentryConfigOpts';
 
-const validSentryEnvs = ['local', 'test', 'ci', 'dev', 'stage', 'prod'];
+const sentryEnvMap: Record<string, string> = {
+  test: 'test',
+  local: 'dev',
+  dev: 'dev',
+  ci: 'ci',
+  stage: 'stage',
+  prod: 'prod',
+  production: 'prod',
+  development: 'dev',
+};
+
+function toEnv(val: any) {
+  if (typeof val === 'string') {
+    return sentryEnvMap[val];
+  }
+  return '';
+}
 
 export function buildSentryConfig(config: SentryConfigOpts, log: ILogger) {
   if (log) {
@@ -11,7 +27,7 @@ export function buildSentryConfig(config: SentryConfigOpts, log: ILogger) {
   const opts = {
     dsn: config.sentry.dsn,
     release: config.release || config.version,
-    environment: config.sentry.env,
+    environment: toEnv(config.sentry.env),
     sampleRate: config.sentry.sampleRate,
     tracesSampleRate: config.sentry.tracesSampleRate,
     clientName: config.sentry.clientName,
@@ -25,16 +41,29 @@ export function buildSentryConfig(config: SentryConfigOpts, log: ILogger) {
 }
 
 function checkSentryConfig(config: SentryConfigOpts, log: ILogger) {
-  if (!config.sentry?.dsn) {
-    raiseError('config missing sentry.dsn.');
-  } else {
-    log.info('sentry enabled!');
+  if (!config || !config.sentry || !config.sentry?.dsn) {
+    log?.info(
+      'sentry-config-builder',
+      'config missing: sentry.dsn. sentry disabled.'
+    );
+    return;
   }
 
-  if (!config.env) {
+  log?.info('sentry-config-builder', 'sentry.dsn specified. sentry enabled!');
+
+  if (!config.sentry.env) {
     raiseError('config missing either environment or env.');
-  } else if (!(config.env in validSentryEnvs)) {
-    raiseError('invalid config.env. options are: ' + validSentryEnvs.join(','));
+  } else if (!toEnv(config.sentry.env)) {
+    raiseError(
+      `invalid config.env. ${config.sentry.env} options are: ${Object.keys(
+        sentryEnvMap
+      ).join(',')}`
+    );
+  } else {
+    log?.info(
+      'sentry-config-builder',
+      'sentry targeting: ' + sentryEnvMap[config.sentry.env]
+    );
   }
 
   if (!config.release && !config.version) {
@@ -52,8 +81,8 @@ function checkSentryConfig(config: SentryConfigOpts, log: ILogger) {
   }
 
   function raiseError(msg: string) {
-    log.error(msg);
-    if (config.sentry.strict) {
+    log?.warn('sentry-config-builder', msg);
+    if (config.sentry?.strict) {
       throw new SentryConfigurationBuildError(msg);
     }
   }

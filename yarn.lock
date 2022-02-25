@@ -5577,19 +5577,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sentry/core@npm:6.17.9":
-  version: 6.17.9
-  resolution: "@sentry/core@npm:6.17.9"
-  dependencies:
-    "@sentry/hub": 6.17.9
-    "@sentry/minimal": 6.17.9
-    "@sentry/types": 6.17.9
-    "@sentry/utils": 6.17.9
-    tslib: ^1.9.3
-  checksum: 703f2ffdcbc3b34f48070d8892014b0d82ab44c837746c8f3225b32b21a0d362b130acde4d65b0ee71d2cb39b7a2a2f23d7cd92e15f27dd6e9d03d4386495065
-  languageName: node
-  linkType: hard
-
 "@sentry/hub@npm:6.17.9":
   version: 6.17.9
   resolution: "@sentry/hub@npm:6.17.9"
@@ -21526,7 +21513,7 @@ fsevents@~2.1.1:
     "@nestjs/core": ^8.3.1
     "@nestjs/graphql": ^8.0.2
     "@nestjs/mapped-types": ^1.0.1
-    "@nestjs/platform-express": ^8.2.6
+    "@nestjs/platform-express": ^8.3.1
     "@sentry/integrations": ^6.17.9
     "@sentry/node": ^6.17.9
     "@types/chance": ^1.1.2
@@ -22102,7 +22089,7 @@ fsevents@~2.1.1:
     "@nestjs/graphql": ^8.0.2
     "@nestjs/mapped-types": ^1.0.1
     "@nestjs/passport": ^8.1.0
-    "@nestjs/platform-express": ^8.2.6
+    "@nestjs/platform-express": ^8.3.1
     "@sentry/integrations": ^6.17.9
     "@sentry/node": ^6.17.9
     "@types/chance": ^1.1.2
@@ -22608,7 +22595,7 @@ fsevents@~2.1.1:
     "@nestjs/config": ^1.1.6
     "@nestjs/core": ^8.3.1
     "@nestjs/mapped-types": ^1.0.1
-    "@nestjs/platform-express": ^8.2.6
+    "@nestjs/platform-express": ^8.3.1
     "@sentry/integrations": ^6.17.9
     "@sentry/node": ^6.17.9
     "@types/convict": ^5.2.2

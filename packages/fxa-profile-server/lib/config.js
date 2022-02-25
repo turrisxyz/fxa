@@ -305,12 +305,6 @@ const conf = convict({
       format: 'String',
       env: 'SENTRY_DSN',
     },
-    env: {
-      doc: 'Environment name to report to sentry',
-      default: 'local',
-      format: ['local', 'ci', 'dev', 'stage', 'prod'],
-      env: 'SENTRY_ENV',
-    },
     sampleRate: {
       doc: 'Rate at which sentry traces are captured.',
       default: 1.0,
