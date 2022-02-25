@@ -10,10 +10,10 @@ import { SentryConfigOpts } from '../../sentry';
 const sinon = require('sinon');
 
 const config: SentryConfigOpts = {
-  env: 'test',
   release: 'v0.0.0',
   sentry: {
     dsn: 'https://public:private@host:8080/1',
+    env: 'test',
     clientName: 'fxa-shared-testing',
     sampleRate: 0,
     tracesSampleRate: 0,

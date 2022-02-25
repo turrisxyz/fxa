@@ -103,8 +103,7 @@ exports.create = async function createServer() {
         ...config,
         release,
       },
-      // TOOD: Get logger working
-      console
+      logger
     );
     Sentry.init({
       ...opts,

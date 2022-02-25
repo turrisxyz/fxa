@@ -36,13 +36,14 @@ const version = getVersionInfo(__dirname);
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService<AppConfig>) => {
+        const sentry = configService.get('sentry');
         return {
-          dsn: configService.get('sentry').dsn,
-          environment: configService.get('env'),
-          serverName: configService.get('sentry').serverName,
+          dsn: sentry.dsn,
+          environment: sentry.env,
+          serverName: sentry.serverName,
           release: version.version,
-          sampleRate: configService.get('sentry').sampleRate,
-          tracesSampleRate: configService.get('sentry').tracesSampleRate,
+          sampleRate: sentry.sampleRate,
+          tracesSampleRate: sentry.tracesSampleRate,
         };
       },
     }),

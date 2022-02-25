@@ -91,6 +91,12 @@ const conf = convict({
       env: 'SENTRY_DSN',
       format: String,
     },
+    env: {
+      doc: 'Environment name to report to sentry',
+      default: 'local',
+      format: ['local', 'ci', 'dev', 'stage', 'prod'],
+      env: 'SENTRY_ENV',
+    },
     sampleRate: {
       default: 1.0,
       doc: 'Rate at which errors are sampled.',

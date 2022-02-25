@@ -75,6 +75,7 @@ module.exports = () => {
     productRedirectURLs: config.get('productRedirectURLs'),
     sentry: {
       dsn: config.get('sentry.dsn'),
+      env: config.get('sentry.env'),
       sampleRate: config.get('sentry.sampleRate'),
       tracesSampleRate: config.get('sentry.tracesSampleRate'),
       serverName: config.get('sentry.serverName'),

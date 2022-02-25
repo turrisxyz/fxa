@@ -49,7 +49,7 @@ const version = getVersionInfo(__dirname);
       inject: [ConfigService],
       useFactory: (configService: ConfigService<AppConfig>) => ({
         dsn: configService.get('sentry').dsn,
-        environment: configService.get('env'),
+        environment: configService.get('sentry').env,
         serverName: configService.get('sentry').serverName,
         release: version.version,
         tracesSampleRate: configService.get('sentry').tracesSampleRate,

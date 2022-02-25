@@ -17,8 +17,6 @@ const version = require('../package.json').version;
 async function configureSentry(server, config, log) {
   const logger = require('../lib/log')(config.log.level, 'configure-sentry');
 
-  console.trace('Configuring sentry', config.sentry);
-
   if (config.sentry && config.sentry.dsn) {
     const opts = buildSentryConfig(
       {

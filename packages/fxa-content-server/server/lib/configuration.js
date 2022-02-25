@@ -575,6 +575,12 @@ const conf = (module.exports = convict({
       env: 'SENTRY_DSN',
       format: String,
     },
+    env: {
+      doc: 'Environment name to report to sentry',
+      default: 'local',
+      format: ['local', 'ci', 'dev', 'stage', 'prod'],
+      env: 'SENTRY_ENV',
+    },
     clientName: {
       default: 'fxa-content-client',
     },

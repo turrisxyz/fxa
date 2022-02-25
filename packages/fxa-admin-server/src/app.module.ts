@@ -54,14 +54,17 @@ const version = getVersionInfo(__dirname);
     SentryModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService<AppConfig>) => ({
-        dsn: configService.get('sentry').dsn,
-        environment: configService.get('env'),
-        release: version.version,
-        sampleRate: configService.get('sentry').sampleRate,
-        serverName: configService.get('sentry').serverName,
-        tracesSampleRate: configService.get('sentry').tracesSampleRate,
-      }),
+      useFactory: (configService: ConfigService<AppConfig>) => {
+        const sentry = configService.get('sentry');
+        return {
+          dsn: sentry.dsn,
+          environment: sentry.env,
+          release: version.version,
+          sampleRate: sentry.sampleRate,
+          serverName: sentry.serverName,
+          tracesSampleRate: sentry.tracesSampleRate,
+        };
+      },
     }),
   ],
   controllers: [],

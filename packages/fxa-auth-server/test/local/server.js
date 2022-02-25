@@ -679,6 +679,7 @@ function getConfig() {
     },
     sentry: {
       dsn: '',
+      env: 'local',
     },
   };
 }

@@ -31,6 +31,7 @@ module.exports = function (config) {
   );
   const MX_RECORD_VALIDATION = config.get('mxRecordValidation');
   const SENTRY_CLIENT_DSN = config.get('sentry.dsn');
+  const SENTRY_CLIENT_ENV = config.get('sentry.env');
   const SENTRY_SAMPLE_RATE = config.get('sentry.sampleRate');
   const SENTRY_TRACES_SAMPLE_RATE = config.get('sentry.tracesSampleRate');
   const SENTRY_CLIENT_NAME = config.get('sentry.clientName');
@@ -78,6 +79,7 @@ module.exports = function (config) {
     scopedKeysValidation: SCOPED_KEYS_VALIDATION,
     sentry: {
       dsn: SENTRY_CLIENT_DSN,
+      env: SENTRY_CLIENT_ENV,
       sampleRate: SENTRY_SAMPLE_RATE,
       tracesSampleRate: SENTRY_TRACES_SAMPLE_RATE,
       clientName: SENTRY_CLIENT_NAME,

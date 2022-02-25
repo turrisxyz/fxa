@@ -14,6 +14,7 @@ export interface Config {
   };
   sentry: {
     dsn: string;
+    env: string;
     sampleRate: number;
     tracesSampleRate: number;
     clientName?: string;
@@ -63,6 +64,7 @@ export function defaultConfig(): Config {
     productRedirectURLs: {},
     sentry: {
       dsn: '',
+      env: 'test',
       sampleRate: 1.0,
       tracesSampleRate: 0.1,
       serverName: 'fxa-payments-server',

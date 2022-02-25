@@ -5,6 +5,18 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Debug content server ci test",
+      "program": "./tests/intern.js",
+      "args": ["--suites", "circle", "--groupsCount", "6", "--groupNum", "6", "--grep", "subscriptions - sign up, failed to subscribe due to expired CC"],
+      "request": "launch",
+      "cwd":"${workspaceFolder}/packages/fxa-content-server",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "pwa-node"
+    },
+
+    {
       "type": "pm2-node",
       "request": "attach",
       "name": "Attach via PM2",
@@ -27,6 +39,8 @@
       "autoAttachChildProcesses": true,
       "cwd":"${workspaceFolder}/packages/functional-tests",
       "request": "launch",
-    }
+    },
+
+
   ]
 }

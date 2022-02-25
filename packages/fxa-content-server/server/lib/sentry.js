@@ -55,10 +55,10 @@ if (config.get('sentry.dsn')) {
   // if no DSN provided then error reporting is disabled
   const opts = buildSentryConfig(
     {
-      env: config.get('env'),
       release: RELEASE,
       sentry: {
         dsn: config.get('sentry.dsn'),
+        env: config.get('sentry.env'),
         sampleRate: config.get('sentry.sampleRate'),
         tracesSampleRate: config.get('sentry.tracesSampleRate'),
         serverName: config.get('sentry.serverName'),

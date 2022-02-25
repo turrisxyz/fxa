@@ -47,7 +47,7 @@ const version = getVersionInfo(__dirname);
 
         return {
           dsn: sentry.dsn,
-          environment: configService.get('env'),
+          environment: sentry.env,
           serverName: sentry.serverName,
           release: version.version,
           sampleRate: sentry.sampleRate,
