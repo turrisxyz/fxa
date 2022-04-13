@@ -44,12 +44,7 @@ registerSuite('post_verify_newsletters', {
         .then(testElementExists(selectors.SETTINGS.HEADER))
 
         .then(
-          openPage(Newsletters, selectors.POST_VERIFY_ADD_NEWSLETTERS.HEADER, {
-            query: {
-              forceExperiment: 'newsletterSync',
-              forceExperimentGroup: 'trailhead-copy',
-            },
-          })
+          openPage(Newsletters, selectors.POST_VERIFY_ADD_NEWSLETTERS.HEADER, {})
         )
 
         .then(
@@ -77,29 +72,6 @@ registerSuite('post_verify_newsletters', {
         .then(click(selectors.POST_VERIFY_ADD_NEWSLETTERS.SUBMIT))
 
         .then(testElementExists(selectors.SETTINGS.HEADER));
-    },
-
-    'treatment new copy': function () {
-      return this.remote
-        .then(openPage(ENTER_EMAIL_URL, selectors.ENTER_EMAIL.HEADER))
-        .then(fillOutEmailFirstSignIn(email, PASSWORD))
-        .then(testElementExists(selectors.SETTINGS.HEADER))
-
-        .then(
-          openPage(Newsletters, selectors.POST_VERIFY_ADD_NEWSLETTERS.HEADER, {
-            query: {
-              forceExperiment: 'newsletterSync',
-              forceExperimentGroup: 'new-copy',
-            },
-          })
-        )
-
-        .then(
-          testElementTextInclude(
-            selectors.POST_VERIFY_ADD_NEWSLETTERS.DESCRIPTION,
-            'Get practical knowledge in your inbox about'
-          )
-        );
     },
   },
 });
