@@ -34,6 +34,7 @@ export function abbrevPlayPurchaseFromSubscriptionPurchase(
   };
 }
 
+// FXA -4450 -
 export class PlaySubscriptions
   implements SubscriptionsService<GooglePlaySubscription>
 {
@@ -61,6 +62,7 @@ export class PlaySubscriptions
     }
   }
 
+  // TODO: FXA-4450 - DEP
   async getAbbrevPlayPurchases(uid: string) {
     if (!this.playBilling) {
       return [];
@@ -75,6 +77,7 @@ export class PlaySubscriptions
     return purchases.map(abbrevPlayPurchaseFromSubscriptionPurchase);
   }
 
+  // TODO: FXA-4450 - TOP LEVEL DEP
   /**
    * Gets all active Google Play subscriptions for the given user id
    */

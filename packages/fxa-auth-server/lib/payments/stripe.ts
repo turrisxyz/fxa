@@ -102,6 +102,7 @@ export const STRIPE_OBJECT_TYPE_TO_RESOURCE: Record<string, string> = {
   tax_rate: TAX_RATE_RESOURCE,
 };
 
+// TODO: FXA-4450 - DEP
 export const VALID_RESOURCE_TYPES = Object.values(
   STRIPE_OBJECT_TYPE_TO_RESOURCE
 );
@@ -192,10 +193,14 @@ export class StripeHelper {
   private statsd: StatsD;
   private taxIds: { [key: string]: string };
   private firestore: Firestore;
+
+  // TODO: FXA-4450 - DEP
   private stripeFirestore: StripeFirestore;
   // TODO remove the ? when removing the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag
   private paymentConfigManager?: PaymentConfigManager;
   readonly googleMapsService: GoogleMapsService;
+
+  // TODO: FXA-4450 - DEP
   readonly stripe: Stripe;
   public currencyHelper: CurrencyHelper;
 
@@ -1575,6 +1580,7 @@ export class StripeHelper {
     return paymentMethod;
   }
 
+  // TODO: FXA-4450 - TOP LEVEL DEP
   /**
    * Fetch a customer for the record from Stripe based on user id.
    */
@@ -1593,6 +1599,7 @@ export class StripeHelper {
       CUSTOMER_RESOURCE
     );
 
+    // TODO: FXA-4450 - OBSERVATION - Seems like an unneeded case? Also weird semantics here? A fetch method results in a deletion?
     if (customer.deleted) {
       await deleteAccountCustomer(uid);
       return;
@@ -1626,6 +1633,9 @@ export class StripeHelper {
       const err = new Error(
         `Stripe Customer: ${customer.id} has mismatched uid in metadata.`
       );
+
+      // call base class here and rethrow
+      // TODO: FXA-4450 - OBSERVATION - Can error be turn into some sort of interface or callback to break direct dependency?
       throw error.backendServiceFailure('stripe', 'fetchCustomer', {}, err);
     }
 
@@ -1729,6 +1739,7 @@ export class StripeHelper {
     return purchasedPrices;
   }
 
+  // FXA-4450 - DEP
   /**
    * Append any matching price ids and names to their corresponding AbbrevPlayPurchase.
    */
@@ -1829,6 +1840,7 @@ export class StripeHelper {
     return allProducts.find((p) => p.id === productId);
   }
 
+  // FXA-4450 - DEP (Ulimately needed by google-play )
   /**
    * Fetches all plans from stripe and returns them.
    *
@@ -2345,6 +2357,7 @@ export class StripeHelper {
     };
   }
 
+  // TODO: FXA-4450 - TOP LEVEL DEP - Might not need this, we can format ourselves.
   /**
    * Formats Stripe subscriptions for a customer into an appropriate response.
    */
@@ -3099,6 +3112,7 @@ export class StripeHelper {
     };
   }
 
+  // TODO: FXA-4450 - DEP
   /**
    * Accept a string ID or resource object, return a resource object after
    * retrieving (if necessary)

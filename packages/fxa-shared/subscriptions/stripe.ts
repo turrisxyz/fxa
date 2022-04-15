@@ -16,6 +16,7 @@ export type DeepPartial<T> = {
   [P in keyof T]?: DeepPartial<T[P]>;
 };
 
+// TODO: FXA-4450 - DEP
 /** Represents all subscription statuses that are considered active for a customer */
 export const ACTIVE_SUBSCRIPTION_STATUSES: Stripe.Subscription['status'][] = [
   'active',

@@ -5,6 +5,7 @@ import { CollectionReference, Firestore } from '@google-cloud/firestore';
 import { ACTIVE_SUBSCRIPTION_STATUSES } from 'fxa-shared/subscriptions/stripe';
 import { Stripe } from 'stripe';
 
+// TODO: FXA-4450 - DEP
 export enum FirestoreStripeError {
   FIRESTORE_CUSTOMER_NOT_FOUND = 'FirestoreCustomerNotFound',
   FIRESTORE_SUBSCRIPTION_NOT_FOUND = 'FirestoreSubscriptionNotFound',
@@ -14,6 +15,7 @@ export enum FirestoreStripeError {
   STRIPE_CUSTOMER_DELETED = 'StripeCustomerDeleted',
 }
 
+// TODO: FXA-4450 - DEP
 export function newFirestoreStripeError(
   message: string,
   code: FirestoreStripeError
@@ -23,6 +25,7 @@ export function newFirestoreStripeError(
   return error;
 }
 
+// TODO: FXA-4450 - DEP
 /**
  * StripeFirestore manages access to the Stripe customer data stored in Firestore.
  *
@@ -48,6 +51,7 @@ export class StripeFirestore {
 
   constructor(
     private firestore: Firestore,
+    // TODO: FXA-4450 - DEP
     private customerCollectionDbRef: CollectionReference,
     private stripe: Stripe,
     prefix: string
@@ -324,6 +328,7 @@ export class StripeFirestore {
     );
   }
 
+  // TODO: FXA-4450 - DEP
   /**
    * Retrieve all the customer subscriptions from Firestore.
    */
