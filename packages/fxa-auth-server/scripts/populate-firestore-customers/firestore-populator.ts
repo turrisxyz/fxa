@@ -5,7 +5,7 @@ import { accountExists } from 'fxa-shared/db/models/auth';
 import { Stripe } from 'stripe';
 
 import { StripeHelper } from '../../lib/payments/stripe';
-import { StripeFirestore } from '../../lib/payments/stripe-firestore';
+import { StripeFirestore } from 'fxa-shared/payments';
 import { RateLimitObserver } from './rate-limit-observer';
 
 export class FirestorePopulator {

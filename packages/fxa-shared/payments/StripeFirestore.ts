@@ -4,18 +4,8 @@
 import { CollectionReference, Firestore } from '@google-cloud/firestore';
 import { ACTIVE_SUBSCRIPTION_STATUSES } from 'fxa-shared/subscriptions/stripe';
 import { Stripe } from 'stripe';
+import { FirestoreStripeError } from './StripeHelperSharedTypes';
 
-// TODO: FXA-4450 - DEP
-export enum FirestoreStripeError {
-  FIRESTORE_CUSTOMER_NOT_FOUND = 'FirestoreCustomerNotFound',
-  FIRESTORE_SUBSCRIPTION_NOT_FOUND = 'FirestoreSubscriptionNotFound',
-  FIRESTORE_INVOICE_NOT_FOUND = 'FirestoreInvoiceNotFound',
-  FIRESTORE_PAYMENT_METHOD_NOT_FOUND = 'FirestorePaymentMethodNotFound',
-  STRIPE_CUSTOMER_MISSING_UID = 'StripeCustomerMissingUid',
-  STRIPE_CUSTOMER_DELETED = 'StripeCustomerDeleted',
-}
-
-// TODO: FXA-4450 - DEP
 export function newFirestoreStripeError(
   message: string,
   code: FirestoreStripeError
