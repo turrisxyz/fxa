@@ -2,4 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-export { PlayBilling } from './play-billing';
+export * from './play-billing';
+export * from './user-manager';
+export * from './purchase-manager';

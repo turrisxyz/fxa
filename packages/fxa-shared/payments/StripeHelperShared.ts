@@ -7,7 +7,7 @@ import { Cacheable } from '@type-cacheable/core';
 import {
   deleteAccountCustomer,
   getAccountCustomerByUid,
-} from 'fxa-shared/db/models/auth';
+} from '../db/models/auth';
 import { StatsD } from 'hot-shots';
 import mapValues from 'lodash/mapValues';
 import { Logger } from 'mozlog';
@@ -23,9 +23,20 @@ import {
   STRIPE_PRODUCTS_CACHE_KEY,
   STRIPE_PLANS_CACHE_KEY,
   FirestoreStripeError,
+  STRIPE_PRICE_METADATA,
 } from './StripeHelperSharedTypes';
 
 import { StripeFirestore } from './StripeFirestore';
+import {
+  AbbrevPlan,
+  AbbrevPlayPurchase,
+  ConfiguredPlan,
+} from '../subscriptions/types';
+import { mapPlanConfigsByPriceId } from '../subscriptions/configuration/utils';
+import { formatPlanConfigDto } from '../dto/auth/payments/plan-configuration';
+
+import { PaymentConfigManagerShared } from './configuration/manager';
+import { IPlaySubscriptionsStripeHelper } from './google-play/subscriptions';
 
 /** Minimal configuration required for a shared stripe helper. */
 export interface StripeHelperSharedConfig {
@@ -43,7 +54,9 @@ export interface StripeHelperSharedConfig {
 /**
  * A base class containing StripHelper functionality that is shared across workspaces.
  */
-export abstract class StripeHelperShared {
+export abstract class StripeHelperShared
+  implements IPlaySubscriptionsStripeHelper
+{
   /** Exposes underlying Stripe Instance */
   public readonly stripe: Stripe;
 
@@ -63,6 +76,9 @@ export abstract class StripeHelperShared {
   constructor(
     protected readonly config: StripeHelperSharedConfig,
     protected readonly firestore: Firestore,
+    protected readonly paymentConfigManager:
+      | PaymentConfigManagerShared
+      | undefined,
     protected readonly statsd: StatsD,
     protected readonly log: Logger
   ) {
@@ -361,5 +377,98 @@ export abstract class StripeHelperShared {
   })
   async allPlans(): Promise<Stripe.Plan[]> {
     return this.fetchAllPlans();
+  }
+
+  /**
+   * Append any matching price ids and names to their corresponding AbbrevPlayPurchase.
+   */
+  async addPriceInfoToAbbrevPlayPurchases(
+    purchases: AbbrevPlayPurchase[]
+  ): Promise<
+    (AbbrevPlayPurchase & {
+      product_id: string;
+      product_name: string;
+      price_id: string;
+    })[]
+  > {
+    const plans = await this.allAbbrevPlans();
+    const appendedAbbrevPlayPurchases = [];
+    for (const plan of plans) {
+      const playSkus = this.priceToPlaySkus(plan);
+      const matchingAbbrevPlayPurchases = purchases.filter((purchase) =>
+        playSkus.includes(purchase.sku.toLowerCase())
+      );
+      for (const matchingAbbrevPlayPurchase of matchingAbbrevPlayPurchases) {
+        appendedAbbrevPlayPurchases.push({
+          ...matchingAbbrevPlayPurchase,
+          product_id: plan.product_id,
+          product_name: plan.product_name,
+          price_id: plan.plan_id,
+        });
+      }
+    }
+    return appendedAbbrevPlayPurchases;
+  }
+
+  async allAbbrevPlans(): Promise<AbbrevPlan[]> {
+    const plans = await this.allConfiguredPlans();
+    return plans.map((p) => ({
+      amount: p.amount,
+      currency: p.currency,
+      interval_count: p.interval_count,
+      interval: p.interval,
+      plan_id: p.id,
+      plan_metadata: p.metadata,
+      plan_name: p.nickname || '',
+      product_id: (p.product as Stripe.Product).id,
+      product_metadata: (p.product as Stripe.Product).metadata,
+      product_name: (p.product as Stripe.Product).name,
+      // TODO simple copy p.configuration below when remove the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag
+      // @ts-ignore: depending the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag, p can be a Stripe.Plan, which does have a `configuration`
+      configuration: p.configuration ?? null,
+    }));
+  }
+
+  async allConfiguredPlans(): Promise<ConfiguredPlan[] | Stripe.Plan[]> {
+    // for a transitional period we will include configs from both Firestore
+    // docs and Stripe metadata when enabled by the feature flag, making it
+    // possible for Payments to toggle the Firestore configs feature flag
+    // without any changes or re-deploy necessary on the auth-server
+
+    const allPlans = await this.allPlans();
+
+    // TODO remove when removing the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag
+    if (!this.paymentConfigManager) {
+      return allPlans;
+    }
+
+    const planConfigs = mapPlanConfigsByPriceId(
+      await this.paymentConfigManager.allPlans()
+    );
+
+    return allPlans.map((p) => {
+      (p as ConfiguredPlan).configuration = null;
+      const planConfig = planConfigs[p.id];
+      if (planConfig) {
+        const mergedConfig =
+          // TODO remove the ! when removing the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag
+          this.paymentConfigManager!.getMergedConfig(planConfig);
+        (p as ConfiguredPlan).configuration = formatPlanConfigDto(mergedConfig);
+      }
+      return p as ConfiguredPlan;
+    });
+  }
+
+  /**
+   * Return a list of skus for a given price.
+   */
+  priceToPlaySkus(price: AbbrevPlan) {
+    const priceSkus =
+      price.plan_metadata?.[STRIPE_PRICE_METADATA.PLAY_SKU_IDS] || '';
+    return priceSkus
+      .trim()
+      .split(',')
+      .map((c) => c.trim().toLowerCase())
+      .filter((c) => !!c);
   }
 }

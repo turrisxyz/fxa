@@ -8,9 +8,8 @@ import { Container } from 'typedi';
 
 import error from '../../error';
 import { CapabilityService } from '../../payments/capability';
-import { PlayBilling } from '../../payments/google-play/play-billing';
-import { PurchaseUpdateError } from '../../payments/google-play/types/errors';
-import { SkuType } from '../../payments/google-play/types/purchases';
+import { PlayBilling } from '../../payments/iap/google-play/play-billing';
+import { SkuType, PurchaseUpdateError } from 'fxa-shared/payments/google-play';
 import { AuthLogger, AuthRequest } from '../../types';
 import { handleAuthScoped } from './utils';
 
@@ -18,7 +17,7 @@ export class GoogleIapHandler {
   private log: AuthLogger;
   private playBilling: PlayBilling;
   private capabilityService: CapabilityService;
-  private db: any;
+  private db: any; // okay to remove? appears to be unused
 
   constructor(db: any) {
     this.db = db;

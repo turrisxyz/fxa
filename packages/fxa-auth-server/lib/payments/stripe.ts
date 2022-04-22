@@ -60,8 +60,9 @@ import { PaymentConfigManager } from './configuration/manager';
 import { CurrencyHelper } from './currencies';
 import { SubscriptionPurchase } from './google-play/subscription-purchase';
 import {
-  CUSTOMER_RESOURCE,
+  FormattedSubscriptionForEmail,
   PAYMENT_METHOD_RESOURCE,
+  CUSTOMER_RESOURCE,
   SUBSCRIPTIONS_RESOURCE,
   INVOICES_RESOURCE,
   PRODUCT_RESOURCE,
@@ -70,7 +71,6 @@ import {
   STRIPE_PLANS_CACHE_KEY,
   BillingAddressOptions,
   CHARGES_RESOURCE,
-  FormattedSubscriptionForEmail,
   MOZILLA_TAX_ID,
   STRIPE_CUSTOMER_METADATA,
   STRIPE_INVOICE_METADATA,
@@ -82,6 +82,9 @@ import {
   StripeHelperShared,
   FirestoreStripeError,
 } from 'fxa-shared/payments';
+
+// Prevents having to update quite a few other imports
+export * from 'fxa-shared/payments/StripeHelperSharedTypes';
 
 export type PaymentBillingDetails = ReturnType<
   StripeHelper['extractBillingDetails']
@@ -111,8 +114,6 @@ export class StripeHelper extends StripeHelperShared {
   private webhookSecret: string;
   private redis: ioredis.Redis | undefined;
   private taxIds: { [key: string]: string };
-  // TODO remove the ? when removing the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag
-  private paymentConfigManager?: PaymentConfigManager;
   public readonly googleMapsService: GoogleMapsService;
   public currencyHelper: CurrencyHelper;
 
@@ -120,7 +121,15 @@ export class StripeHelper extends StripeHelperShared {
    * Create a Stripe Helper with built-in caching.
    */
   constructor(log: Logger, config: ConfigType, statsd: StatsD) {
-    super(config, Container.get(AuthFirestore), statsd, log);
+    super(
+      config,
+      Container.get(AuthFirestore),
+      config.subscriptions.productConfigsFirestore.enabled === true
+        ? Container.get(PaymentConfigManager)
+        : undefined,
+      statsd,
+      log
+    );
 
     this.stripeTaxRatesCacheTtlSeconds =
       config.subhub.stripeTaxRatesCacheTtlSeconds;
@@ -150,9 +159,6 @@ export class StripeHelper extends StripeHelperShared {
       Container.set(AuthLogger, log);
     }
 
-    if (config.subscriptions.productConfigsFirestore.enabled === true) {
-      this.paymentConfigManager = Container.get(PaymentConfigManager);
-    }
     this.googleMapsService = Container.get(GoogleMapsService);
 
     cacheManager.setOptions({
@@ -1560,7 +1566,6 @@ export class StripeHelper extends StripeHelperShared {
     return purchasedPrices;
   }
 
-  // FXA-4450 - DEP
   /**
    * Append any matching price ids and names to their corresponding AbbrevPlayPurchase.
    */
