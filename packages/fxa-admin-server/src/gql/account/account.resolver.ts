@@ -20,6 +20,7 @@ import { AttachedSession } from 'fxa-shared/connected-services/models/AttachedSe
 import { Account } from 'fxa-shared/db/models/auth';
 import { MozLoggerService } from 'fxa-shared/nestjs/logger/logger.service';
 
+import { Features } from '../../auth/user-group-header.decorator';
 import { CurrentUser } from '../../auth/auth-header.decorator';
 import { GqlAuthHeaderGuard } from '../../auth/auth-header.guard';
 import { AppConfig } from '../../config';
@@ -28,6 +29,7 @@ import { uuidTransformer } from '../../database/transformers';
 import { Account as AccountType } from '../../gql/model/account.model';
 import { AttachedClient } from '../../gql/model/attached-clients.model';
 import { Email as EmailType } from '../../gql/model/emails.model';
+import { AdminPanelFeature } from 'fxa-shared/guards';
 
 const ACCOUNT_COLUMNS = [
   'uid',
@@ -72,6 +74,7 @@ export class AccountResolver {
     private configService: ConfigService<AppConfig>
   ) {}
 
+  @Features(AdminPanelFeature.AccountSearch)
   @Query((returns) => AccountType, { nullable: true })
   public accountByUid(
     @Args('uid', { nullable: false }) uid: string,
@@ -90,6 +93,7 @@ export class AccountResolver {
       .findOne({ uid: uidBuffer });
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @Query((returns) => AccountType, { nullable: true })
   public accountByEmail(
     @Args('email', { nullable: false }) email: string,
@@ -104,6 +108,7 @@ export class AccountResolver {
       .first();
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @Query((returns) => [EmailType], { nullable: true })
   public getEmailsLike(@Args('search', { nullable: false }) search: string) {
     return this.db.emails
@@ -114,6 +119,7 @@ export class AccountResolver {
   }
 
   // unverifies the user's email. will have to verify again on next login
+  @Features(AdminPanelFeature.UnverifyEmail)
   @Mutation((returns) => Boolean)
   public async unverifyEmail(
     @Args('email') email: string,
@@ -129,6 +135,7 @@ export class AccountResolver {
     return !!result;
   }
 
+  @Features(AdminPanelFeature.DisableAccount)
   @Mutation((returns) => Boolean)
   public async disableAccount(
     @Args('uid') uid: string,
@@ -142,6 +149,7 @@ export class AccountResolver {
     return !!result;
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async emailBounces(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -162,6 +170,7 @@ export class AccountResolver {
     return result;
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async emails(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -171,6 +180,7 @@ export class AccountResolver {
       .where('uid', uidBuffer);
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async securityEvents(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -187,6 +197,7 @@ export class AccountResolver {
       .orderBy('createdAt', 'DESC');
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async totp(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -196,6 +207,7 @@ export class AccountResolver {
       .where('uid', uidBuffer);
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async recoveryKeys(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -205,6 +217,7 @@ export class AccountResolver {
       .where('uid', uidBuffer);
   }
 
+  @Features(AdminPanelFeature.AccountSearch)
   @ResolveField()
   public async linkedAccounts(@Root() account: Account) {
     const uidBuffer = uuidTransformer.to(account.uid);
@@ -214,6 +227,7 @@ export class AccountResolver {
       .where('uid', uidBuffer);
   }
 
+  @Features(AdminPanelFeature.ConnectedServices)
   @ResolveField(() => [AttachedClient])
   public async attachedClients(@Root() account: Account) {
     const clientFormatter = new ClientFormatter(
@@ -259,6 +273,7 @@ export class AccountResolver {
       });
   }
 
+  @Features(AdminPanelFeature.UnlinkAccount)
   @Mutation((returns) => Boolean)
   public async unlinkAccount(
     @Args('uid') uid: string,

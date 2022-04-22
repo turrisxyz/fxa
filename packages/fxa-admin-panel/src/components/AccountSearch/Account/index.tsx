@@ -198,8 +198,8 @@ export const DangerZone = ({
     <>
       <Guard
         features={[
-          AdminPanelFeature.UnVerifyAccounts,
-          AdminPanelFeature.DisableAccounts,
+          AdminPanelFeature.UnverifyEmail,
+          AdminPanelFeature.DisableAccount,
         ]}
       >
         <h3 className="mt-0 my-0 mb-1 bg-red-600 font-medium h-8 pb-8 pl-1 pt-1 rounded-sm text-lg text-white">
@@ -210,7 +210,7 @@ export const DangerZone = ({
           irreversible.
         </p>
       </Guard>
-      <Guard features={[AdminPanelFeature.UnVerifyAccounts]}>
+      <Guard features={[AdminPanelFeature.UnverifyEmail]}>
         <h2 className="text-lg">Email Verification</h2>
         <p className="text-base leading-6 border-l-2 border-red-600 mb-4 pl-4">
           Reset email verification. User needs to re-verify on next login.
@@ -226,7 +226,7 @@ export const DangerZone = ({
           {unverifyMessage}
         </p>
       </Guard>
-      <Guard features={[AdminPanelFeature.DisableAccounts]}>
+      <Guard features={[AdminPanelFeature.DisableAccount]}>
         <h2 className="text-lg">Disable Login</h2>
         <p className="text-base leading-6 border-l-2 border-red-600 mb-4 pl-4">
           Stops this account from logging in.
