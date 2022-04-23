@@ -1,37 +1,41 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+import { ILogger } from '../../../log';
 import {
   AppStoreServerAPI,
   Environment,
   StatusResponse,
 } from 'app-store-server-api';
-import { Container } from 'typedi';
 
-import { AppConfig, AuthLogger } from '../../../types';
 import { AppStoreHelperError } from './types/errors';
 
 export class AppStoreHelper {
-  private log: AuthLogger;
-  private appStoreServerApiClients: {
+  protected appStoreServerApiClients: {
     [key: string]: AppStoreServerAPI;
   };
-  private credentialsByBundleId: any;
-  private environment: Environment;
+  protected credentialsByBundleId: any;
+  protected environment: Environment;
 
-  constructor() {
-    this.log = Container.get(AuthLogger);
-    const {
-      subscriptions: { appStore },
-    } = Container.get(AppConfig);
+  constructor(
+    protected readonly config: {
+      subscriptions: {
+        appStore: {
+          sandbox: boolean;
+          credentials: any;
+        };
+      };
+    },
+    protected readonly log: ILogger
+  ) {
     this.credentialsByBundleId = {};
     // Initialize App Store Server API client per bundle ID
-    this.environment = appStore.sandbox
+    this.environment = config.subscriptions.appStore.sandbox
       ? Environment.Sandbox
       : Environment.Production;
     this.appStoreServerApiClients = {};
     for (const [bundleIdWithUnderscores, credentials] of Object.entries(
-      appStore.credentials
+      config.subscriptions.appStore.credentials
     )) {
       // Cannot use an actual bundleId (e.g. 'org.mozilla.ios.FirefoxVPN') as the key
       // due to https://github.com/mozilla/node-convict/issues/250

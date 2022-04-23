@@ -80,16 +80,16 @@ export class SubscriptionPurchase {
   // Response from App Store API server Subscription Status endpoint
   // https://developer.apple.com/documentation/appstoreserverapi/get_all_subscription_statuses
   // IMPORTANT: If adding a new required property, also add it to SUBSCRIPTION_PURCHASE_REQUIRED_PROPERTIES
-  private autoRenewStatus: AutoRenewStatus;
-  private autoRenewProductId: string;
-  bundleId: string; // unique identifier for the iOS app; analogous to a Stripe product id
-  private environment: Environment;
-  private inAppOwnershipType: OwnershipType;
-  private originalPurchaseDate: number;
-  originalTransactionId: string; // unique identifier for the subscription; analogous to a Stripe subscription id
-  private productId: string; // unique identifier for the plan; analogous to the Stripe plan id
-  private status: SubscriptionStatus;
-  private type: TransactionType;
+  private autoRenewStatus!: AutoRenewStatus;
+  private autoRenewProductId!: string;
+  bundleId!: string; // unique identifier for the iOS app; analogous to a Stripe product id
+  private environment!: Environment;
+  private inAppOwnershipType!: OwnershipType;
+  private originalPurchaseDate!: number;
+  originalTransactionId!: string; // unique identifier for the subscription; analogous to a Stripe subscription id
+  private productId!: string; // unique identifier for the plan; analogous to the Stripe plan id
+  private status!: SubscriptionStatus;
+  private type!: TransactionType;
   private expirationIntent?: number;
   private expiresDate?: number;
   private gracePeriodExpiresDate?: number;
@@ -102,7 +102,7 @@ export class SubscriptionPurchase {
 
   // Library-managed properties
   userId?: string; // hex string for FxA user id
-  private verifiedAt: number; // timestamp of last purchase verification by App Store Server API
+  private verifiedAt!: number; // timestamp of last purchase verification by App Store Server API
 
   // Convert raw API response from App Store Server API to a SubscriptionPurchase object
   static fromApiResponse(

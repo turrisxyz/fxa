@@ -17,9 +17,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { CollectionReference } from '@google-cloud/firestore';
-import Container from 'typedi';
+import { ILogger } from '../../../log';
 
-import { AuthLogger } from '../../../types';
 import { PurchaseManager } from './purchase-manager';
 import {
   GOOGLE_PLAY_FORM_OF_PAYMENT,
@@ -32,17 +31,15 @@ import { SkuType } from './types/purchases';
  * A class that allows looking up purchases registered to a particular user
  */
 export class UserManager {
-  private log: AuthLogger;
   /*
    * This class is intended to be initialized by the library.
    * Library consumer should not initialize this class themselves.
    */
   constructor(
-    private purchasesDbRef: CollectionReference,
-    private purchaseManager: PurchaseManager
-  ) {
-    this.log = Container.get(AuthLogger);
-  }
+    protected readonly purchasesDbRef: CollectionReference,
+    protected readonly purchaseManager: PurchaseManager,
+    protected readonly log: ILogger
+  ) {}
 
   /*
    * Query subscriptions registered to a particular user, that are either active or in account hold.

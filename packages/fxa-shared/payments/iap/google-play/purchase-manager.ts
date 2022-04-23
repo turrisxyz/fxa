@@ -18,9 +18,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { CollectionReference } from '@google-cloud/firestore';
 import { androidpublisher_v3 } from 'googleapis';
-import Container from 'typedi';
+import { ILogger } from '../../../log';
 
-import { AuthLogger } from '../../../types';
 import {
   mergePurchaseWithFirestorePurchaseRecord,
   SubscriptionPurchase,
@@ -39,18 +38,15 @@ const REPLACED_PURCHASE_USERID_PLACEHOLDER = 'invalid';
  * A class that provides user-purchase linking features
  */
 export class PurchaseManager {
-  private log: AuthLogger;
-
   /*
    * This class is intended to be initialized by the library.
    * Library consumer should not initialize this class themselves.
    */
   constructor(
-    private purchasesDbRef: CollectionReference,
-    private playDeveloperApiClient: androidpublisher_v3.Androidpublisher
-  ) {
-    this.log = Container.get(AuthLogger);
-  }
+    protected purchasesDbRef: CollectionReference,
+    protected playDeveloperApiClient: androidpublisher_v3.Androidpublisher,
+    protected readonly log: ILogger
+  ) {}
 
   /*
    * Query a subscription purchase by its package name, product Id (sku) and purchase token.

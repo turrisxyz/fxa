@@ -2,24 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { Firestore } from '@google-cloud/firestore';
-import { Container } from 'typedi';
 import { TypedCollectionReference } from 'typesafe-node-firestore';
-
-import { AppConfig, AuthFirestore, AuthLogger } from '../../types';
+import { ILogger } from '../../log';
 import { IapConfig } from './types';
 
 export class IAPConfig {
-  private firestore: Firestore;
-  private log: AuthLogger;
-  private iapConfigDbRef: TypedCollectionReference<IapConfig>;
-  private prefix: string;
+  protected iapConfigDbRef: TypedCollectionReference<IapConfig>;
+  protected prefix: string;
 
-  constructor() {
-    this.log = Container.get(AuthLogger);
-
-    const { authFirestore } = Container.get(AppConfig);
-    this.prefix = `${authFirestore.prefix}iap-`;
-    this.firestore = Container.get(AuthFirestore);
+  constructor(
+    protected readonly config: {
+      authFirestore: {
+        prefix: string;
+      };
+    },
+    protected readonly firestore: Firestore,
+    protected readonly log: ILogger
+  ) {
+    this.prefix = `${config.authFirestore.prefix}iap-`;
     this.iapConfigDbRef = this.firestore.collection(
       `${this.prefix}iap-config`
     ) as TypedCollectionReference<IapConfig>;

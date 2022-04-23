@@ -6,10 +6,7 @@ import {
   GooglePlaySubscription,
   MozillaSubscriptionTypes,
 } from 'fxa-shared/subscriptions/types';
-import Container from 'typedi';
 
-import { internalValidationError } from '../../../../lib/error';
-import { AppConfig } from '../../../types';
 import { StripeHelper } from '../../stripe';
 import { PlayBilling } from './play-billing';
 import { SubscriptionPurchase } from './subscription-purchase';
@@ -34,30 +31,30 @@ export function abbrevPlayPurchaseFromSubscriptionPurchase(
   };
 }
 
+export class PlaySubscriptionsError {
+  constructor(
+    public readonly op: string,
+    public readonly data: any,
+    public readonly error: Error
+  ) {}
+}
+
 export class PlaySubscriptions
   implements SubscriptionsService<GooglePlaySubscription>
 {
-  private playBilling?: PlayBilling;
-  private stripeHelper?: StripeHelper;
-
-  constructor() {
-    const config = Container.get(AppConfig);
+  constructor(
+    protected readonly config: any,
+    protected readonly playBilling?: PlayBilling,
+    protected readonly stripeHelper?: StripeHelper
+  ) {
     if (!config.subscriptions.enabled) {
-      throw internalValidationError(
+      throw new PlaySubscriptionsError(
         'PlaySubscriptions',
         {},
         new Error(
           'Trying to new up PlaySubscriptions while subscriptions are disabled.  Check your dependency graph.'
         )
       );
-    }
-
-    if (Container.has(PlayBilling)) {
-      this.playBilling = Container.get(PlayBilling);
-    }
-
-    if (Container.has(StripeHelper)) {
-      this.stripeHelper = Container.get(StripeHelper);
     }
   }
 

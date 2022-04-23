@@ -3,23 +3,20 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { Firestore } from '@google-cloud/firestore';
 import { Auth, google } from 'googleapis';
-import { Container } from 'typedi';
-
-import { AppConfig, AuthFirestore, AuthLogger } from '../../../types';
+import { ILogger } from '../../../log';
 import { PurchaseManager } from './purchase-manager';
 import { UserManager } from './user-manager';
 
 export class PlayBilling {
-  private firestore: Firestore;
-  private log: AuthLogger;
-  private prefix: string;
+  protected prefix: string;
   public purchaseManager: PurchaseManager;
   public userManager: UserManager;
 
-  constructor() {
-    const config = Container.get(AppConfig);
-    this.log = Container.get(AuthLogger);
-
+  constructor(
+    protected readonly config: any,
+    protected readonly firestore: Firestore,
+    protected readonly log: ILogger
+  ) {
     // Initialize Google Play Developer API client
     const playAccountConfig = config.subscriptions.playApiServiceAccount;
     const authConfig: Auth.JWTOptions = {
@@ -34,14 +31,18 @@ export class PlayBilling {
       auth: new Auth.JWT(authConfig),
     });
     this.prefix = `${config.authFirestore.prefix}iap-`;
-    this.firestore = Container.get(AuthFirestore);
     const purchasesDbRef = this.firestore.collection(
       `${this.prefix}play-purchases`
     );
     this.purchaseManager = new PurchaseManager(
       purchasesDbRef,
-      playDeveloperApiClient
+      playDeveloperApiClient,
+      log
     );
-    this.userManager = new UserManager(purchasesDbRef, this.purchaseManager);
+    this.userManager = new UserManager(
+      purchasesDbRef,
+      this.purchaseManager,
+      this.log
+    );
   }
 }

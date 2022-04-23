@@ -2,14 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { CollectionReference } from '@google-cloud/firestore';
+import { ILogger } from '../../../log';
 import {
   decodeRenewalInfo,
   decodeTransaction,
   TransactionType,
 } from 'app-store-server-api';
-import Container from 'typedi';
-
-import { AuthLogger } from '../../../types';
 import { AppStoreHelper } from './app-store-helper';
 import {
   APPLE_APP_STORE_FORM_OF_PAYMENT,
@@ -26,7 +24,6 @@ import { PurchaseQueryError, PurchaseUpdateError } from './types';
  */
 export class PurchaseManager {
   private appStoreHelper: AppStoreHelper;
-  private log: AuthLogger;
   private purchasesDbRef: CollectionReference;
 
   /*
@@ -35,10 +32,10 @@ export class PurchaseManager {
    */
   constructor(
     purchasesDbRef: CollectionReference,
-    appStoreHelper: AppStoreHelper
+    appStoreHelper: AppStoreHelper,
+    protected readonly log: ILogger
   ) {
     this.appStoreHelper = appStoreHelper;
-    this.log = Container.get(AuthLogger);
     this.purchasesDbRef = purchasesDbRef;
   }
 
@@ -68,10 +65,15 @@ export class PurchaseManager {
       const item = apiResponse.data[0].lastTransactions.find(
         (item) => item.originalTransactionId === originalTransactionId
       );
-      subscriptionStatus = item.status;
-      // FIXME: improve performance; see https://mozilla-hub.atlassian.net/browse/FXA-4949
-      transactionInfo = await decodeTransaction(item.signedTransactionInfo);
-      renewalInfo = await decodeRenewalInfo(item.signedRenewalInfo);
+
+      if (item) {
+        subscriptionStatus = item.status;
+        // FIXME: improve performance; see https://mozilla-hub.atlassian.net/browse/FXA-4949
+        transactionInfo = await decodeTransaction(item.signedTransactionInfo);
+        renewalInfo = await decodeRenewalInfo(item.signedRenewalInfo);
+      } else {
+        throw new Error('Item not found!');
+      }
     } catch (err) {
       throw this.convertAppStoreAPIErrorToLibraryError(err);
     }
