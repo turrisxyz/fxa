@@ -9,6 +9,7 @@ import {
 } from 'app-store-server-api';
 
 import { AppStoreHelperError } from './types/errors';
+import { Inject } from '@nestjs/common';
 
 export class AppStoreHelper {
   protected appStoreServerApiClients: {
@@ -18,6 +19,7 @@ export class AppStoreHelper {
   protected environment: Environment;
 
   constructor(
+    @Inject('APP_CONFIG')
     protected readonly config: {
       subscriptions: {
         appStore: {

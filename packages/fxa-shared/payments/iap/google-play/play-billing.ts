@@ -7,16 +7,25 @@ import { ILogger } from '../../../log';
 import { PurchaseManager } from './purchase-manager';
 import { UserManager } from './user-manager';
 
+export type PlayBillingConfigType = {
+  authFirestore: any;
+  subscriptions: any;
+};
+
 export class PlayBilling {
   protected prefix: string;
   public purchaseManager: PurchaseManager;
   public userManager: UserManager;
 
   constructor(
-    protected readonly config: any,
+    protected readonly config: PlayBillingConfigType,
     protected readonly firestore: Firestore,
     protected readonly log: ILogger
   ) {
+    console.log('PlayBilling GOT CONFIG', config.subscriptions);
+    console.log('PlayBilling GOT firestore', firestore);
+    console.log('PlayBilling GOT log', log);
+
     // Initialize Google Play Developer API client
     const playAccountConfig = config.subscriptions.playApiServiceAccount;
     const authConfig: Auth.JWTOptions = {

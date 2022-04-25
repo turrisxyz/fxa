@@ -7,15 +7,15 @@ import { useAdapter } from '@type-cacheable/ioredis-adapter';
 import {
   deleteAccountCustomer,
   getAccountCustomerByUid,
-} from 'fxa-shared/db/models/auth';
-import { formatPlanConfigDto } from 'fxa-shared/dto/auth/payments/plan-configuration';
-import { mapPlanConfigsByPriceId } from 'fxa-shared/subscriptions/configuration/utils';
+} from '../db/models/auth';
+import { formatPlanConfigDto } from '../dto/auth/payments/plan-configuration';
+import { mapPlanConfigsByPriceId } from '../subscriptions/configuration/utils';
 
 import {
   AbbrevPlan,
   AbbrevPlayPurchase,
   ConfiguredPlan,
-} from 'fxa-shared/subscriptions/types';
+} from '../subscriptions/types';
 import { StatsD } from 'hot-shots';
 import { Redis } from 'ioredis';
 import mapValues from 'lodash/mapValues';
@@ -23,6 +23,7 @@ import { Stripe } from 'stripe';
 import { ILogger } from '../log';
 import { PaymentConfigManager } from './configuration/manager';
 import { FirestoreStripeError, StripeFirestore } from './stripe-firestore';
+import { Inject } from '@nestjs/common';
 
 export const CHARGES_RESOURCE = 'charges';
 export const COUPON_RESOURCE = 'coupons';
@@ -91,6 +92,7 @@ export abstract class StripeHelper {
    * Create a Stripe Helper with built-in caching.
    */
   constructor(
+    @Inject('APP_CONFIG')
     protected readonly config: StripeHelperConfig,
     protected readonly firestore: Firestore,
     protected readonly paymentConfigManager: PaymentConfigManager | undefined, // TODO remove the undefined when removing the SUBSCRIPTIONS_FIRESTORE_CONFIGS_ENABLED feature flag

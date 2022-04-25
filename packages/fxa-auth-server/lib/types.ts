@@ -6,6 +6,14 @@ import { Token } from 'typedi';
 import { Logger } from 'mozlog';
 import { Firestore } from '@google-cloud/firestore';
 import { ConfigType } from '../config';
+import {
+  PlayBilling as PlayBillingType,
+  PlayBillingConfigType,
+  PlaySubscriptions as PlaySubscriptionsType,
+  PlaySubscriptionsConfigType,
+} from 'fxa-shared/payments/iap/google-play';
+
+import { ILogger } from 'fxa-shared/log';
 
 /**
  * Auth-Server specific interfaces to use objects.
@@ -71,6 +79,7 @@ export interface ProfileClient {
 
 // Container token types
 export const AuthLogger = new Token<AuthLogger>('AUTH_LOGGER');
+export const SharedLogger = new Token<ILogger>('ILOGGER');
 export const AuthFirestore = new Token<Firestore>('AUTH_FIRESTORE');
-export const AppConfig = new Token<ConfigType>('APP_CONFIG');
+export const AppConfig = 'APP_CONFIG';
 export const ProfileClient = new Token<ProfileClient>('PROFILE_CLIENT');

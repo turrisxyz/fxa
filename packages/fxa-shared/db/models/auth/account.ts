@@ -70,6 +70,7 @@ export class Account extends BaseAuthModel {
   devices?: Device[];
   emails?: Email[];
   linkedAccounts?: LinkedAccount[];
+  neat?: string;
 
   static relationMappings = {
     emails: {

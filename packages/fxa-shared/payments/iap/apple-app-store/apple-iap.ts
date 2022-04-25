@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { Firestore } from '@google-cloud/firestore';
 import { ILogger } from '../../../log';
-import { Container } from 'typedi';
 
 import { AppStoreHelper } from './app-store-helper';
 import { PurchaseManager } from './purchase-manager';

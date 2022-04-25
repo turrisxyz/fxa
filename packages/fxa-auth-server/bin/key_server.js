@@ -9,18 +9,30 @@ const jwtool = require('fxa-jwtool');
 const { StatsD } = require('hot-shots');
 const { Container } = require('typedi');
 const { StripeHelper } = require('../lib/payments/stripe');
-const { PlayBilling } = require('../lib/payments/iap/google-play');
+const {
+  PlayBilling,
+  PlaySubscriptions,
+} = require('../lib/payments/iap/google-play');
 const { CurrencyHelper } = require('../lib/payments/currencies');
 const {
   AuthLogger,
   AuthFirestore,
   AppConfig,
   ProfileClient,
+  PlayBillingConfig,
+  PlaySubscriptionsConfig,
+  SharedLogger,
 } = require('../lib/types');
 const { setupFirestore } = require('../lib/firestore-db');
+const { IAPConfig } = require('fxa-shared/payments/iap/iap-config');
 
 async function run(config) {
   Container.set(AppConfig, config);
+  Container.set(PlaySubscriptionsConfig, config);
+  Container.set(PlayBillingConfig, config);
+
+  Container.set('IAP_CONFIG_CONFIG', config);
+  console.log('SETTING IAP CONFIG', Container.get('IAP_CONFIG_CONFIG'));
 
   const statsd = config.statsd.enabled
     ? new StatsD({
@@ -39,6 +51,7 @@ async function run(config) {
 
   const log = require('../lib/log')({ ...config.log, statsd });
   Container.set(AuthLogger, log);
+  Container.set(SharedLogger, log);
 
   if (!Container.has(AuthFirestore)) {
     const authFirestore = setupFirestore(config);
@@ -101,7 +114,18 @@ async function run(config) {
     config.subscriptions.playApiServiceAccount &&
     config.subscriptions.playApiServiceAccount.enabled
   ) {
-    Container.get(PlayBilling);
+    const authFireStore = Container.get(AuthFirestore);
+    const iapConfig = new IAPConfig(config, authFireStore, log);
+    Container.set(IAPConfig, iapConfig);
+
+    const playBilling = new PlayBilling(config, authFireStore, log);
+    const playSubscriptions = new PlaySubscriptions(
+      config,
+      playBilling,
+      stripeHelper
+    );
+    Container.set(PlayBilling, playBilling);
+    Container.set(PlaySubscriptions, playSubscriptions);
   }
 
   const profile = require('../lib/profile/client')(log, config, statsd);

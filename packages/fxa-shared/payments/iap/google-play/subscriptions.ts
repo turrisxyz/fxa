@@ -1,11 +1,12 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+import { Inject } from '@nestjs/common';
 import {
   AbbrevPlayPurchase,
   GooglePlaySubscription,
   MozillaSubscriptionTypes,
-} from 'fxa-shared/subscriptions/types';
+} from '../../../subscriptions/types';
 
 import { StripeHelper } from '../../stripe';
 import { PlayBilling } from './play-billing';
@@ -39,14 +40,23 @@ export class PlaySubscriptionsError {
   ) {}
 }
 
+export type PlaySubscriptionsConfigType = {
+  subscriptions: {
+    enabled: boolean;
+  };
+};
+
 export class PlaySubscriptions
   implements SubscriptionsService<GooglePlaySubscription>
 {
   constructor(
-    protected readonly config: any,
+    @Inject('APP_CONFIG')
+    protected readonly config: PlaySubscriptionsConfigType,
     protected readonly playBilling?: PlayBilling,
     protected readonly stripeHelper?: StripeHelper
   ) {
+    console.log('PlaySubscriptions GOT CONFIG', config.subscriptions);
+
     if (!config.subscriptions.enabled) {
       throw new PlaySubscriptionsError(
         'PlaySubscriptions',

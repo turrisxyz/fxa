@@ -2,6 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 import { Firestore } from '@google-cloud/firestore';
+import { Inject, Container, Token } from 'typedi';
 import { TypedCollectionReference } from 'typesafe-node-firestore';
 import { ILogger } from '../../log';
 import { IapConfig } from './types';
@@ -11,14 +12,13 @@ export class IAPConfig {
   protected prefix: string;
 
   constructor(
-    protected readonly config: {
-      authFirestore: {
-        prefix: string;
-      };
-    },
+    protected config: any,
     protected readonly firestore: Firestore,
     protected readonly log: ILogger
   ) {
+    this.config = Container.get('APP_CONFIG');
+    console.log('IAP_CONFIG ... ', config);
+
     this.prefix = `${config.authFirestore.prefix}iap-`;
     this.iapConfigDbRef = this.firestore.collection(
       `${this.prefix}iap-config`
