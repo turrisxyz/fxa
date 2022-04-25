@@ -14,7 +14,9 @@ import { SkuType } from '../../payments/iap/google-play/types/purchases';
 import { IAPConfig } from '../../payments/iap/iap-config';
 import { AuthLogger, AuthRequest } from '../../types';
 import { handleAuthScoped } from './utils';
-import SUBSCRIPTIONS_DOCS from '../../../docs/swagger/subscriptions-api';
+
+const SUBSCRIPTIONS_DOCS =
+  require('../../../docs/swagger/subscriptions-api').default;
 
 export class GoogleIapHandler {
   private log: AuthLogger;
