@@ -50,7 +50,7 @@ import {
 import { AppConfig, AuthFirestore, AuthLogger } from '../types';
 import { PaymentConfigManager } from './configuration/manager';
 import { CurrencyHelper } from './currencies';
-import { SubscriptionPurchase } from './iap/google-play/subscription-purchase';
+import { SubscriptionPurchase } from './iap/google-play';
 import { FirestoreStripeError } from './stripe-firestore';
 import {
   StripeHelper as StripeHelperBase,
@@ -66,6 +66,8 @@ import {
   SUBSCRIPTIONS_RESOURCE,
 } from 'fxa-shared/payments/stripe';
 
+export * from 'fxa-shared/payments/stripe';
+
 const MOZILLA_TAX_ID = 'Tax ID';
 const STRIPE_TAX_RATES_CACHE_KEY = 'listStripeTaxRates';
 const SUBSCRIPTION_PROMOTION_CODE_METADATA_KEY = 'appliedPromotionCode';
@@ -76,7 +78,7 @@ enum STRIPE_PRODUCT_METADATA {
   PROMOTION_CODES = 'promotionCodes',
 }
 
-enum STRIPE_INVOICE_METADATA {
+export enum STRIPE_INVOICE_METADATA {
   PAYPAL_TRANSACTION_ID = 'paypalTransactionId',
   PAYPAL_REFUND_TRANSACTION_ID = 'paypalRefundTransactionId',
   PAYPAL_REFUND_REASON = 'paypalRefundRefused',
@@ -84,14 +86,14 @@ enum STRIPE_INVOICE_METADATA {
   RETRY_ATTEMPTS = 'paymentAttempts',
 }
 
-const SUBSCRIPTION_UPDATE_TYPES = {
+export const SUBSCRIPTION_UPDATE_TYPES = {
   UPGRADE: 'upgrade',
   DOWNGRADE: 'downgrade',
   REACTIVATION: 'reactivation',
   CANCELLATION: 'cancellation',
 };
 
-type FormattedSubscriptionForEmail = {
+export type FormattedSubscriptionForEmail = {
   productId: string;
   productName: string;
   planId: string;
@@ -110,7 +112,7 @@ type BillingAddressOptions = {
   state: string;
 };
 
-type PaymentBillingDetails = ReturnType<
+export type PaymentBillingDetails = ReturnType<
   StripeHelper['extractBillingDetails']
 > & {
   paypal_payment_error?: PaypalPaymentError;
@@ -118,7 +120,7 @@ type PaymentBillingDetails = ReturnType<
 };
 
 // The countries we need region data for
-const COUNTRIES_LONG_NAME_TO_SHORT_NAME_MAP = {
+export const COUNTRIES_LONG_NAME_TO_SHORT_NAME_MAP = {
   // The long name is used in the BigQuery metrics logs; the short name is used
   // in the Stripe customer billing address.  The long names are also used to
   // index into the country to states maps.

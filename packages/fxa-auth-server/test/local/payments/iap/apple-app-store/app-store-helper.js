@@ -15,7 +15,7 @@ const { AppStoreServerAPI } = require('app-store-server-api');
 
 const mockAppStoreServerAPI = sinon.createStubInstance(AppStoreServerAPI);
 const { AppStoreHelper } = proxyquire(
-  '../../../../../lib/payments/iap/apple-app-store/app-store-helper',
+  '../../../../../lib/payments/iap/apple-app-store',
   {
     'app-store-server-api': {
       AppStoreServerAPI: function () {

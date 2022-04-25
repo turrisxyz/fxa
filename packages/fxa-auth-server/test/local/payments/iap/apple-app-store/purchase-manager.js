@@ -15,10 +15,10 @@ const { AppConfig, AuthLogger } = require('../../../../../lib/types');
 const {
   PurchaseQueryError,
   PurchaseUpdateError,
-} = require('../../../../../lib/payments/iap/apple-app-store/types');
+} = require('../../../../../lib/payments/iap/apple-app-store');
 const {
   SubscriptionPurchase,
-} = require('../../../../../lib/payments/iap/apple-app-store/subscription-purchase');
+} = require('../../../../../lib/payments/iap/apple-app-store');
 
 const sandbox = sinon.createSandbox();
 
@@ -45,7 +45,7 @@ const mockApiResult = {
 };
 
 const { PurchaseManager } = proxyquire(
-  '../../../../../lib/payments/iap/apple-app-store/purchase-manager',
+  '../../../../../lib/payments/iap/apple-app-store',
   {
     './subscription-purchase': {
       SubscriptionPurchase: mockSubscriptionPurchase,
@@ -65,7 +65,7 @@ const { PurchaseManager } = proxyquire(
 // TODO: rename proxyquired PurchaseManager to use MockPurchaseManager alias
 // and use real name here.
 const { PurchaseManager: UnmockedPurchaseManager } = proxyquire(
-  '../../../../../lib/payments/iap/apple-app-store/purchase-manager',
+  '../../../../../lib/payments/iap/apple-app-store',
   {
     'app-store-server-api': {
       decodeRenewalInfo: mockDecodeRenewalInfo,

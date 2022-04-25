@@ -19,13 +19,11 @@ const subscriptionCreated =
 const { ProfileClient } = require('../../../lib/types');
 const {
   SubscriptionPurchase,
-} = require('../../../lib/payments/iap/google-play/subscription-purchase');
+} = require('../../../lib/payments/iap/google-play');
 const proxyquire = require('proxyquire').noPreserveCache();
 
 const authDbModule = require('fxa-shared/db/models/auth');
-const {
-  PurchaseQueryError,
-} = require('../../../lib/payments/iap/google-play/types');
+const { PurchaseQueryError } = require('../../../lib/payments/iap/google-play');
 
 const mockAuthEvents = {};
 

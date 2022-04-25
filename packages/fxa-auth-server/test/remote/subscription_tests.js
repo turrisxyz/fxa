@@ -16,9 +16,7 @@ const testServerFactory = require('../test_server');
 const { CapabilityService } = require('../../lib/payments/capability');
 const { StripeHelper } = require('../../lib/payments/stripe');
 const { AuthLogger } = require('../../lib/types');
-const {
-  PlaySubscriptions,
-} = require('../../lib/payments/iap/google-play/subscriptions');
+const { PlaySubscriptions } = require('../../lib/payments/iap/google-play');
 
 const validClients = config.oauthServer.clients.filter(
   (client) => client.trusted && client.canGrant && client.publicClient

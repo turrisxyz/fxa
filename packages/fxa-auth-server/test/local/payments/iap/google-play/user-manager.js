@@ -10,16 +10,14 @@ const { default: Container } = require('typedi');
 
 const { mockLog } = require('../../../../mocks');
 
-const {
-  UserManager,
-} = require('../../../../../lib/payments/iap/google-play/user-manager');
+const { UserManager } = require('../../../../../lib/payments/iap/google-play');
 const { AuthLogger } = require('../../../../../lib/types');
 const {
   SubscriptionPurchase,
-} = require('../../../../../lib/payments/iap/google-play/subscription-purchase');
+} = require('../../../../../lib/payments/iap/google-play');
 const {
   PurchaseQueryError,
-} = require('../../../../../lib/payments/iap/google-play/types');
+} = require('../../../../../lib/payments/iap/google-play');
 
 const USER_ID = 'testUser';
 const VALID_SUB_API_RESPONSE = {

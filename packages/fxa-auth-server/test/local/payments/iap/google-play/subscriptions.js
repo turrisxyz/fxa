@@ -9,7 +9,7 @@ const { PlayBilling } = require('../../../../../lib/payments/iap/google-play');
 const {
   PlaySubscriptions,
   abbrevPlayPurchaseFromSubscriptionPurchase,
-} = require('../../../../../lib/payments/iap/google-play/subscriptions');
+} = require('fxa-shared/payments/iap/google-play');
 const { MozillaSubscriptionTypes } = require('fxa-shared/subscriptions/types');
 const { AppConfig } = require('../../../../../lib/types');
 const { StripeHelper } = require('../../../../../lib/payments/stripe');

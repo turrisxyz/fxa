@@ -2,4 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-export { AppleIAP } from './apple-iap';
+export * from './types';
+
+export * from './app-store-helper';
+export * from './apple-iap';
+export * from './errors';
+export * from './purchase-manager';
+export * from './subscription-purchase';

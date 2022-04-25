@@ -22,9 +22,7 @@ const { PayPalHelper } = require('../../../lib/payments/paypal/helper');
 const { CapabilityService } = require('../../../lib/payments/capability');
 const { normalizeEmail } = require('fxa-shared').email.helpers;
 const { MozillaSubscriptionTypes } = require('fxa-shared/subscriptions/types');
-const {
-  PlaySubscriptions,
-} = require('../../../lib/payments/iap/google-play/subscriptions');
+const { PlaySubscriptions } = require('../../../lib/payments/iap/google-play');
 
 const { AccountHandler } = require('../../../lib/routes/account');
 

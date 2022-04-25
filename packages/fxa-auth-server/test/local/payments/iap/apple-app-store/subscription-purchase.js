@@ -15,7 +15,7 @@ const {
   APPLE_APP_STORE_FORM_OF_PAYMENT,
   SUBSCRIPTION_PURCHASE_REQUIRED_PROPERTIES,
   SubscriptionPurchase,
-} = require('../../../../../lib/payments/iap/apple-app-store/subscription-purchase');
+} = require('../../../../../lib/payments/iap/apple-app-store');
 
 describe('SubscriptionPurchase', () => {
   const autoRenewStatus = 1;

@@ -16,12 +16,12 @@ const {
   SkuType,
   PurchaseUpdateError,
   NotificationType,
-} = require('../../../../../lib/payments/iap/google-play/types');
+} = require('../../../../../lib/payments/iap/google-play');
 
 const mockSubscriptionPurchase = {};
 const mockMergePurchase = sinon.fake.returns({});
 const { PurchaseManager } = proxyquire(
-  '../../../../../lib/payments/iap/google-play/purchase-manager',
+  '../../../../../lib/payments/iap/google-play',
   {
     './subscription-purchase': {
       SubscriptionPurchase: mockSubscriptionPurchase,

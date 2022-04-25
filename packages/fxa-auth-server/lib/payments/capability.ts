@@ -11,9 +11,11 @@ import { commaSeparatedListToArray } from './utils';
 import error from '../error';
 import { authEvents } from '../events';
 import { AuthLogger, AuthRequest, ProfileClient } from '../types';
-import { PlayBilling } from './iap/google-play/play-billing';
-import { SubscriptionPurchase } from './iap/google-play/subscription-purchase';
-import { PurchaseQueryError } from './iap/google-play/types';
+import {
+  SubscriptionPurchase,
+  PlayBilling,
+  PurchaseQueryError,
+} from './iap/google-play';
 import { StripeHelper } from './stripe';
 
 function hex(blob: Buffer | string): string {

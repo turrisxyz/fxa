@@ -8,9 +8,9 @@ import { Container } from 'typedi';
 
 import error from '../../error';
 import { CapabilityService } from '../../payments/capability';
-import { PlayBilling } from '../../payments/iap/google-play/play-billing';
-import { PurchaseUpdateError } from '../../payments/iap/google-play/types/errors';
-import { SkuType } from '../../payments/iap/google-play/types/purchases';
+import { PlayBilling } from '../../payments/iap/google-play';
+import { PurchaseUpdateError } from '../../payments/iap/google-play';
+import { SkuType } from '../../payments/iap/google-play';
 import { IAPConfig } from '../../payments/iap/iap-config';
 import { AuthLogger, AuthRequest } from '../../types';
 import { handleAuthScoped } from './utils';

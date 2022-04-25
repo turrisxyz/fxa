@@ -83,7 +83,7 @@ const {
 } = require('fxa-shared/db/models/auth');
 const {
   SubscriptionPurchase,
-} = require('../../../lib/payments/iap/google-play/subscription-purchase');
+} = require('../../../lib/payments/iap/google-play');
 const { AuthFirestore, AuthLogger, AppConfig } = require('../../../lib/types');
 const {
   INVOICES_RESOURCE,
